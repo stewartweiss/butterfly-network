@@ -56,6 +56,11 @@ int main ( int argc, char* argv[])
         exit(1);
     }
 
+    /* No negatives and nothing too large for the order */
+    if ( ( k < 0 ) || ( k > 32 ) ) {
+       printf( "The order is not in range.\n");
+       exit(1);
+    }
 
     long int columns = (long)pow(2,k);
     for ( i = 0; i < k; i++ ) {
