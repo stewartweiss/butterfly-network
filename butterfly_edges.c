@@ -3,7 +3,8 @@
   Author         : Stewart Weiss
   Created on     : September 24, 2019
   Description    : Computes the forward cross-edges in a butterfly network
-  Purpose        : To confirm that the formula in the lecture notes is correct
+  Purpose        : To show that we can compute the edges without using
+                   bitwise operations, but grossly inefficiently.
   Usage          : butterfly_edges  <order>
                      where <order> is the number of ranks minus 1
   Build with     : gcc -o butterfly_edges butterfly_edges.c -lm
@@ -30,6 +31,9 @@
 #include <math.h>
 #include <errno.h>
 
+/* Comment out the line below to build a faster program. */
+#define NOBITWISE
+
 int main ( int argc, char* argv[])
 {
 
@@ -52,15 +56,27 @@ int main ( int argc, char* argv[])
         exit(1);
     }
 
+
     long int columns = (long)pow(2,k);
     for ( i = 0; i < k; i++ ) {
         printf("\nEdges for rank  %d:\n", i);
+
+#ifdef NOBITWISE
+        /*  This is how to do it without using bitwise operators */
         n = (int)pow(2,k-i-1);
         m = 2*n;
         for ( j = 0; j < columns ; j++ ) {
             int temp = m*(j/m) + ( n * ((j/n + 1)%2)) + j%n;
             printf ("(%d,%d) => (%d,%d)\n", i,j,i+1, temp);
         }
+#else
+        /* and this uses bitwise operators */
+        for ( j = 0; j < columns ; j++ ) {
+            int temp = j ^ (1 << k-i-1);
+            printf ("(%d,%d) => (%d,%d)\n", i,j,i+1, temp);
+        }
+#endif
+
 
     }
 return 0;
